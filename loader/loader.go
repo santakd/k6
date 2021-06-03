@@ -242,12 +242,14 @@ func Load(
 }
 
 func resolveUsingLoaders(logger logrus.FieldLogger, name string) (*url.URL, error) {
-	_, loader, loaderArgs := pickLoader(name)
+	loaderName, loader, loaderArgs := pickLoader(name)
 	if loader != nil {
 		urlString, err := loader(logger, name, loaderArgs)
 		if err != nil {
+			logger.Warnf("Using magic urls for `%s` is deprated. Please use normal urls", loaderName)
 			return nil, err
 		}
+		logger.Warnf("Using magic urls for `%s` is deprated. Please just use the full url `%s`", loaderName, urlString)
 		return url.Parse(urlString)
 	}
 
